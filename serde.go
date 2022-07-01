@@ -1,13 +1,14 @@
 package kafka
 
 import (
+	"encoding/json"
 	"reflect"
 
 	"github.com/riferrei/srclient"
 )
 
 type Serializer func(configuration Configuration, topic string, data interface{}, element Element, schema string, version int) ([]byte, *Xk6KafkaError)
-type Deserializer func(configuration Configuration, topic string, data []byte, element Element, schema string, version int) (interface{}, *Xk6KafkaError)
+type Deserializer func(configuration Configuration, topic string, data []byte, element Element, schema string, version int) (json.RawMessage, *Xk6KafkaError)
 
 const (
 	// TODO: move these to their own package

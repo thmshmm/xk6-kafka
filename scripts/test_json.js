@@ -64,17 +64,17 @@ export default function () {
                 time: new Date(), // Will be converted to timestamp automatically
             },
             {
-                key: JSON.stringify({
+                key: {
                     correlationId: "test-id-def-" + index,
-                }),
-                value: JSON.stringify({
+                },
+                value: {
                     name: "xk6-kafka",
                     version: "0.9.0",
                     author: "Mostafa Moradian",
                     description:
                         "k6 extension to load test Apache Kafka with support for Avro messages",
                     index: index,
-                }),
+                },
                 headers: {
                     mykey: "myvalue",
                 },
@@ -91,11 +91,15 @@ export default function () {
         "10 messages are received": (messages) => messages.length == 10,
     });
 
+    console.log(new Date(Date.parse(messages[0].time.toString())));
+
     check(messages[0], {
-        "Topic equals to xk6_kafka_json_topic": (msg) => msg["topic"] == topic,
-        "Key is correct": (msg) => msg["key"] == JSON.stringify({ correlationId: "test-id-abc-0" }),
+        "Topic equals to xk6_kafka_json_topic": (msg) => msg.topic == topic,
+        "Key is correct": (msg) =>
+            JSON.parse(String.fromCharCode(...msg.key)) ==
+            JSON.stringify({ correlationId: "test-id-abc-0" }),
         "Value is correct": (msg) =>
-            msg["value"] ==
+            JSON.parse(String.fromCharCode(...msg.value)) ==
             JSON.stringify({
                 name: "xk6-kafka",
                 version: "0.9.0",
@@ -104,13 +108,11 @@ export default function () {
                     "k6 extension to load test Apache Kafka with support for Avro messages",
                 index: 0,
             }),
-        "Header equals {mykey: 'myvalue'}": (msg) =>
-            msg.headers[0]["key"] == "mykey" &&
-            String.fromCharCode(...msg.headers[0]["value"]) == "myvalue",
-        "Time is past": (msg) => new Date(msg["time"]) < new Date(),
-        "Partition is zero": (msg) => msg["partition"] == 0,
-        "Offset is gte zero": (msg) => msg["offset"] >= 0,
-        "High watermark is gte zero": (msg) => msg["highWaterMark"] >= 0,
+        // "Header equals {mykey: 'myvalue'}": (msg) => msg.headers[0] == { mykey: "myvalue" },
+        "Time is past": (msg) => msg.time < new Date(),
+        "Partition is zero": (msg) => msg.partition == 0,
+        "Offset is gte zero": (msg) => msg.offset >= 0,
+        "High watermark is gte zero": (msg) => msg.highWaterMark >= 0,
     });
 }
 

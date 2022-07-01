@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/riferrei/srclient"
@@ -18,6 +19,8 @@ func SerializeString(configuration Configuration, topic string, data interface{}
 	switch data := data.(type) {
 	case string:
 		return []byte(data), nil
+	case json.RawMessage:
+		return data, nil
 	default:
 		return nil, NewXk6KafkaError(
 			invalidDataType,
@@ -27,6 +30,6 @@ func SerializeString(configuration Configuration, topic string, data interface{}
 }
 
 // DeserializeString deserializes a string from bytes
-func DeserializeString(configuration Configuration, topic string, data []byte, element Element, schema string, version int) (interface{}, *Xk6KafkaError) {
-	return string(data), nil
+func DeserializeString(configuration Configuration, topic string, data []byte, element Element, schema string, version int) (json.RawMessage, *Xk6KafkaError) {
+	return data, nil
 }

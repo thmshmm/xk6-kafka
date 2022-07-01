@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/riferrei/srclient"
@@ -36,6 +37,6 @@ func SerializeByteArray(configuration Configuration, topic string, data interfac
 // DeserializeByteArray deserializes the given data from a byte array and returns it.
 // It just returns the data as is. The configuration, topic, element, schema and version
 // are just used to conform with the interface.
-func DeserializeByteArray(configuration Configuration, topic string, data []byte, element Element, schema string, version int) (interface{}, *Xk6KafkaError) {
+func DeserializeByteArray(configuration Configuration, topic string, data []byte, element Element, schema string, version int) (json.RawMessage, *Xk6KafkaError) {
 	return data, nil
 }

@@ -240,7 +240,7 @@ func (k *Kafka) GetDeserializer(schema string) Deserializer {
 
 // consumeInternal consumes messages from the given reader
 func (k *Kafka) consumeInternal(
-	reader *kafkago.Reader, consumeConfig *ConsumeConfig) []map[string]interface{} {
+	reader *kafkago.Reader, consumeConfig *ConsumeConfig) []Message {
 	state := k.vu.State()
 	if state == nil {
 		logger.WithField("error", ErrorForbiddenInInitContext).Error(ErrorForbiddenInInitContext)
@@ -268,7 +268,7 @@ func (k *Kafka) consumeInternal(
 	keyDeserializer := k.GetDeserializer(consumeConfig.Config.Consumer.KeyDeserializer)
 	valueDeserializer := k.GetDeserializer(consumeConfig.Config.Consumer.ValueDeserializer)
 
-	messages := make([]map[string]interface{}, 0)
+	var messages []Message
 
 	for i := int64(0); i < consumeConfig.Limit; i++ {
 		msg, err := reader.ReadMessage(ctx)
@@ -289,10 +289,10 @@ func (k *Kafka) consumeInternal(
 			return messages
 		}
 
-		message := make(map[string]interface{})
+		message := Message{}
 		if len(msg.Key) > 0 {
 			var wrappedError *Xk6KafkaError
-			message["key"], wrappedError = keyDeserializer(
+			message.Key, wrappedError = keyDeserializer(
 				consumeConfig.Config, reader.Config().Topic, msg.Key,
 				Key, consumeConfig.KeySchema, 0)
 			if wrappedError != nil && wrappedError.Unwrap() != nil {
@@ -302,7 +302,7 @@ func (k *Kafka) consumeInternal(
 
 		if len(msg.Value) > 0 {
 			var wrappedError *Xk6KafkaError
-			message["value"], wrappedError = valueDeserializer(
+			message.Value, wrappedError = valueDeserializer(
 				consumeConfig.Config, reader.Config().Topic, msg.Value,
 				Value, consumeConfig.ValueSchema, 0)
 			if wrappedError != nil && wrappedError.Unwrap() != nil {
@@ -311,12 +311,12 @@ func (k *Kafka) consumeInternal(
 		}
 
 		// Rest of the fields of a given message
-		message["topic"] = msg.Topic
-		message["partition"] = msg.Partition
-		message["offset"] = msg.Offset
-		message["time"] = time.Unix(msg.Time.Unix(), 0).Format(time.RFC3339)
-		message["highWaterMark"] = msg.HighWaterMark
-		message["headers"] = msg.Headers
+		message.Topic = msg.Topic
+		message.Partition = msg.Partition
+		message.Offset = msg.Offset
+		message.Time = msg.Time // time.Unix(msg.Time.Unix(), 0).Format(time.RFC3339)
+		message.HighWaterMark = msg.HighWaterMark
+		// message.Headers = msg.Headers
 
 		messages = append(messages, message)
 	}

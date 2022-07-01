@@ -259,7 +259,7 @@ func (k *Kafka) produceInternal(
 		if message.Key != nil {
 			keyData, err := keySerializer(
 				produceConfig.Config, writer.Stats().Topic,
-				string(message.Key), Key, produceConfig.KeySchema, 0)
+				message.Key, Key, produceConfig.KeySchema, 0)
 			if err != nil && err.Unwrap() != nil {
 				logger.WithField("error", err).Error(err)
 			}
@@ -270,7 +270,7 @@ func (k *Kafka) produceInternal(
 		// Then add the message
 		valueData, err := valueSerializer(
 			produceConfig.Config, writer.Stats().Topic,
-			string(message.Value), Value, produceConfig.ValueSchema, 0)
+			message.Value, Value, produceConfig.ValueSchema, 0)
 		if err != nil && err.Unwrap() != nil {
 			logger.WithField("error", err).Error(err)
 		}
