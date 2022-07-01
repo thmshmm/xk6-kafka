@@ -26,12 +26,12 @@ func TestProduce(t *testing.T) {
 			test.module.Kafka.produceInternal(writer, &ProduceConfig{
 				Messages: []Message{
 					{
-						Key:   "key1",
-						Value: "value1",
+						Key:   []byte("key1"),
+						Value: []byte("value1"),
 					},
 					{
-						Key:   "key2",
-						Value: "value2",
+						Key:   []byte("key2"),
+						Value: []byte("value2"),
 					},
 				}})
 		})
@@ -49,12 +49,12 @@ func TestProduce(t *testing.T) {
 			test.module.Kafka.produceInternal(writer, &ProduceConfig{
 				Messages: []Message{
 					{
-						Key:   "key1",
-						Value: "value1",
+						Key:   []byte("key1"),
+						Value: []byte("value1"),
 					},
 					{
-						Key:   "key2",
-						Value: "value2",
+						Key:   []byte("key2"),
+						Value: []byte("value2"),
 					},
 				}})
 		})
@@ -104,13 +104,13 @@ func TestProduceWithoutKey(t *testing.T) {
 			test.module.Kafka.produceInternal(writer, &ProduceConfig{
 				Messages: []Message{
 					{
-						Value:  "value1",
+						Value:  []byte("value1"),
 						Topic:  "test-topic",
 						Offset: 0,
 						Time:   time.Now(),
 					},
 					{
-						Value: "value2",
+						Value: []byte("value2"),
 						Topic: "test-topic",
 					},
 				}})
@@ -154,12 +154,12 @@ func TestProducerContextCancelled(t *testing.T) {
 			test.module.Kafka.produceInternal(writer, &ProduceConfig{
 				Messages: []Message{
 					{
-						Key:   "key1",
-						Value: "value1",
+						Key:   []byte("key1"),
+						Value: []byte("value1"),
 					},
 					{
-						Key:   "key2",
-						Value: "value2",
+						Key:   []byte("key2"),
+						Value: []byte("value2"),
 					},
 				}})
 		})
@@ -204,7 +204,7 @@ func TestProduceJSON(t *testing.T) {
 			test.module.Kafka.produceInternal(writer, &ProduceConfig{
 				Messages: []Message{
 					{
-						Value: string(serialized),
+						Value: serialized,
 					},
 				}})
 		})

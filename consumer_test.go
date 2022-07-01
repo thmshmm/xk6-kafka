@@ -50,8 +50,8 @@ func TestConsume(t *testing.T) {
 			test.module.Kafka.produceInternal(writer, &ProduceConfig{
 				Messages: []Message{
 					{
-						Key:    "key1",
-						Value:  "value1",
+						Key:    []byte("key1"),
+						Value:  []byte("value1"),
 						Offset: 0,
 					},
 				}})
@@ -114,7 +114,7 @@ func TestConsumeWithoutKey(t *testing.T) {
 			test.module.Kafka.produceInternal(writer, &ProduceConfig{
 				Messages: []Message{
 					{
-						Value:  "value1",
+						Value:  []byte("value1"),
 						Offset: 1,
 					},
 				}})
@@ -160,7 +160,7 @@ func TestConsumerContextCancelled(t *testing.T) {
 			test.module.Kafka.produceInternal(writer, &ProduceConfig{
 				Messages: []Message{
 					{
-						Value:  "value1",
+						Value:  []byte("value1"),
 						Offset: 2,
 					},
 				}})
@@ -210,7 +210,7 @@ func TestConsumeJSON(t *testing.T) {
 			test.module.Kafka.produceInternal(writer, &ProduceConfig{
 				Messages: []Message{
 					{
-						Value:  string(serialized),
+						Value:  serialized,
 						Offset: 3,
 					},
 				}})
