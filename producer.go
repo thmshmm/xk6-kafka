@@ -72,8 +72,8 @@ type Message struct {
 	Partition     int                    `json:"partition"`
 	Offset        int64                  `json:"offset"`
 	HighWaterMark int64                  `json:"highWaterMark"`
-	Key           string                 `json:"key"`
-	Value         string                 `json:"value"`
+	Key           json.RawMessage        `json:"key"`
+	Value         json.RawMessage        `json:"value"`
 	Headers       map[string]interface{} `json:"headers"`
 
 	// If not set at the creation, Time will be automatically set when
@@ -241,8 +241,6 @@ func (k *Kafka) produceInternal(
 
 	kafkaMessages := make([]kafkago.Message, len(produceConfig.Messages))
 	for i, message := range produceConfig.Messages {
-		kafkaMessages[i] = kafkago.Message{}
-
 		// Topic can be explicitly set on each individual message
 		// Setting topic on the writer and the messages are mutually exclusive
 		if message.Topic != "" {
@@ -258,10 +256,10 @@ func (k *Kafka) produceInternal(
 		}
 
 		// If a key was provided, add it to the message. Keys are optional.
-		if message.Key != "" {
+		if message.Key != nil {
 			keyData, err := keySerializer(
 				produceConfig.Config, writer.Stats().Topic,
-				message.Key, Key, produceConfig.KeySchema, 0)
+				string(message.Key), Key, produceConfig.KeySchema, 0)
 			if err != nil && err.Unwrap() != nil {
 				logger.WithField("error", err).Error(err)
 			}
@@ -272,7 +270,7 @@ func (k *Kafka) produceInternal(
 		// Then add the message
 		valueData, err := valueSerializer(
 			produceConfig.Config, writer.Stats().Topic,
-			message.Value, Value, produceConfig.ValueSchema, 0)
+			string(message.Value), Value, produceConfig.ValueSchema, 0)
 		if err != nil && err.Unwrap() != nil {
 			logger.WithField("error", err).Error(err)
 		}
